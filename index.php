@@ -1,19 +1,7 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-
-<body>
 <?php
-$city = "";
-$country = "";
-$error = "hé petit coquin qu'est ce que tu essaies de faire ?!";
+$data = "";
+$error = false;
+$err = "hé petit coquin qu'est ce que tu essaies de faire ?!";
 
 $countries = [
     "france" =>
@@ -36,30 +24,30 @@ $countries = [
 ];
 
 //Récupère la ville
-function getCity($country, $countries, $city)
+function getCity($urlCountry, $countries)
 {
-    if (array_key_exists($country, $countries)) {
-        return $countries[$country];
+    if (array_key_exists($urlCountry, $countries)) {
+        return array($urlCountry, $countries[$urlCountry]);
     } else {
-
-    }
+        return $error = true;
+    };
 }
 
 ;
 
 //Check si un pays est passé dans l'url
 if (isset($_GET['country']) && $_GET['country'] !== '') {
-    $country = $_GET['country'];
+    $urlCountry = $_GET['country'];
     //execution of getCity
-    $city = getCity($country, $countries, $city);
-} else {
-    $param = false;
-};
+    $data = getCity($urlCountry, $countries);
+    var_dump($data);
+    die();
+}
 
 //Renvoie la chaîne en lettres capitales
 function toUp($str)
 {
-    echo mb_strtoupper($str);
+    return mb_strtoupper($str);
 }
 
 ;
@@ -67,39 +55,67 @@ function toUp($str)
 //Renvoie la chaîne avec la première lettre en capitale
 function firstLetterToUp($str)
 {
-    echo ucfirst($str);
+    return ucfirst($str);
 }
 
 ;
 
 ?>
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
 <form method="GET" action="index.php">
     <select name="country" id="country">
 
         <?php foreach ($countries as $key => $item) : ?>
 
             <option
-
-                <?php if ($country === $key) {
-                    echo('selected = \"selected\"');
-                } ?>
+                <?php if ($data !== ""): ?>
+                    <?php if ($data[0] === $key): ?>
+                        <?php echo('selected = \"selected\"'); ?>
+                    <?php endif; ?>
+                <?php endif; ?>
                     value="<?= $key ?>">
-                <?php toUp($key) ?>
+                <?php echo toUp($key) ?>
             </option>
         <?php endforeach; ?>
     </select>
-    <p>Quelle est la capitale ? <b>
-            <?php if ($country !== "") {
-                firstLetterToUp($city["capital-name"]);
-            } ?></b>
+    <p>Quelle est la capitale ?
+        <?php if (!$error): ?>
+            <?php var_dump($error) ?>
+            <?php if ($data !== ""): ?>
+                <b>
+
+                    <?php echo firstLetterToUp($data[1]["capital-name"]); ?>
+
+                </b>
+            <?php endif; ?>
+        <?php endif; ?>
     </p>
     <p>
-        <?php if ($country !== "") {
-            echo $city["flag"];
-        } ?>
+        <?php if ($data !== ""): ?>
+            <?php echo $data[1]["flag"]; ?>
+        <?php endif; ?>
+
     </p>
     <button type="submit">Valider</button>
 </form>
+<?php if ($error == true): ?>
+    <p>
+        <?= $err ?>
+    </p>
+<?php endif ?>
 </body>
 
 </html>
